@@ -1,0 +1,21 @@
+extends user-layout
+
+block content
+  #page
+    h1 Welcome, #{user.display_name}!
+    p Add friends and start chatting now.
+  #friends-list
+    #online-container(class="flex")
+      #online-count Online
+      img#online-img(src="/images/circle.png")
+
+  script(src="/socket.io/socket.io.js")
+  script.
+    const user_id="#{user._id}";
+    const user_display_name="#{user.display_name}";
+    const user_friends="#{user.friends}";
+  script(src="/javascripts/socket-connect.js")
+    
+
+    
+

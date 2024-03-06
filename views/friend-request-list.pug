@@ -1,0 +1,25 @@
+//- list of users who have added you, add buttons to accept friend request!
+extends user-layout 
+
+block content
+    #page
+        h1 Requests
+
+        if requestList
+            each user in requestList
+                p #{user.username}
+                form(action='/strife/friend-requests/' + user._id method='POST')
+                    button(type='submit') Accept Request
+            else
+                p You have no friend requests.
+    #friends-list 
+        #online-container(class="flex")
+            #online-count Online
+            img#online-img(src="/images/circle.png")
+
+    script(src="/socket.io/socket.io.js")
+    script.
+        const user_id="#{user._id}";
+        const user_display_name="#{user.display_name}";
+        const user_friends="#{user.friends}";
+    script(src="/javascripts/socket-connect.js")

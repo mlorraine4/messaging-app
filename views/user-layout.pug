@@ -1,0 +1,50 @@
+doctype html
+html
+  head
+    title= "strife"
+    link(rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico")
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    #header
+      a(href="/") 
+        img#logo(src="/images/swords.png")
+      a(href="/") 
+        #title strife
+    #content
+      #navbar
+        a(href='/strife/friends') 
+          .nav-item Friends
+        a(href='/strife/add-friend')     
+          .nav-item Add Friend
+        a(href='/strife/friend-requests') 
+          .nav-item Requests
+        a(href='/strife/friends-pending') 
+          .nav-item Pending
+        div.message-title Messages
+          button#toggle-search-form +
+          form#search-form(action="/strife/get-chat" method="POST" class="hide")
+            div#search-friend-list
+              p Select your friend to open chat
+              each friend in friends
+                div.search-friend-item
+                  input(type="radio" name="user" id=friend._id value=friend._id)
+                  label(for=friend._id) #{friend.display_name} (#{friend.username})
+            button#search-submit-btn(disabled) Chat
+        #chat-list
+          if chats
+            each chat in chats
+              a(href=chat.url)
+                .nav-item #{chat.user.display_name}
+        #user-profile
+          div #{user.display_name}
+          a(href="/strife/log-out")
+            img#log-out-img(src="/images/logout.png")
+      block content
+  script(src="/javascripts/user-layout.js")
+  script.
+    const userid="#{user._id}";
+    const user_display_name="#{user.display_name}";
+    const user_friends="#{user.friends}";
+
+
+

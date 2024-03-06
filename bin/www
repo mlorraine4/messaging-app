@@ -1,0 +1,212 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+const User = require("../models/user.js");
+const Chat = require("../models/chat.js");
+var app = require("../app");
+var debug = require("debug")("messaging-app:server");
+var http = require("http");
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || "8080");
+app.set("port", port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on("error", onError);
+server.on("listening", onListening);
+
+// Start socket io server
+const io = require("../socket.js").init(server);
+
+// online users
+let users = [];
+users.push({
+  id: "6536e375b83fea736e4de927",
+  display_name: "Gary",
+  friends: ["653811542edda256feac07d5"],
+});
+
+// Socket io
+io.on("connection", (socket) => {
+  const session = socket.request.session;
+  const req = socket.request;
+
+  console.log("Connection success", socket.id);
+
+  socket.on("online", async (userdata) => {
+    const userVerified = await User.findById(userdata.id).exec();
+    if (userVerified !== null) {
+      console.log("user logged in!");
+
+      // User exists.
+      const user = { ...userdata, socket_id: socket.id };
+      let index = users.findIndex((i) => i.id === userdata.id);
+      if (index < 0) {
+        // User is not found in users array. Add to array.
+        users.push(user);
+      }
+    }
+  });
+
+  socket.on("log-out", async (userdata) => {
+    const userVerified = await User.findById(userdata.id).exec();
+    if (userVerified !== null) {
+      console.log("logging out user!");
+      // User exists.
+      const user = { ...userdata, socket_id: socket.id };
+      let index = users.findIndex((i) => i.id === user.id);
+
+      if (index > -1) {
+        // Remove from users array.
+        users.splice(index, 1);
+        users.forEach((el) => {
+          if (el.friends.includes(user.id)) {
+            // Emit to all users who are friends with user who logged out.
+            io.to(el.socket_id).emit("user-logged-out", user);
+          }
+        })
+      }
+    }
+  });
+
+  socket.on("join-chat", async (user_id, room) => {
+    const user = await User.findById(user_id).exec();
+    const chat = await Chat.findById(room).exec();
+
+    if (user !== null && chat !== null) {
+      // User and chat exist.
+      const isAuth = chat.users.some((id) => {
+        return id.equals(user_id);
+      });
+      if (isAuth) {
+        // User is a part of chat.
+        console.log(`A user has joined chat: ${room}`);
+        socket.join(room);
+      }
+    }
+  });
+
+  socket.on("send-message", async (data) => {
+    // make sure message.author user has room in chat list
+    const { message, room } = data;
+    const user = await User.findById(message.author_id).exec();
+    const chat = await Chat.findById(room).exec();
+
+    if (user !== null && chat !== null) {
+      // User and chat exist.
+      const isAuth = chat.users.some((id) => {
+        return id.equals(user._id);
+      });
+      if (isAuth) {
+        // User is a part of chat.
+        console.log('sending message');
+        io.to(room).emit("recieve-message", message);
+      }
+    }
+  });
+
+  socket.on("get-online-friends", async (currUser) => {
+    const userVerified = await User.findById(currUser.id).exec();
+    if (userVerified !== null) {
+      // User is verified.
+      // Get list of user's friends.
+      const userFriends = await User.find({
+        _id: { $in: userVerified.friends },
+        friends: userVerified._id,
+      });
+      // Find users who are online and are friends with current user.
+      let friends = [];
+      users.forEach((user) => {
+        userFriends.some((id) => {
+          if (id.equals(user.id)) {
+            friends.push(user);
+          }
+        })
+      });
+
+      io.to(socket.id).emit("users", friends);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Connection disconnected", socket.id);
+
+    let index = users.findIndex((i) => i.socket_id === socket.id);
+    if (index > -1) {
+      // User exists in users array, remove them.
+      users.splice(index, 1);
+    }
+  });
+});
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== "listen") {
+    throw error;
+  }
+
+  var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
+      process.exit(1);
+      break;
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  debug("Listening on " + bind);
+}

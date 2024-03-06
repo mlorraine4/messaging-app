@@ -1,0 +1,21 @@
+extends user-layout
+
+block content
+    #page
+        form#add-friend(action="" method="POST")
+            h2 Add Friend
+            input#username(name="username" placeholder="Add friends using their strife username")
+            button(type='submit') Send Request
+        if errors
+            each error in errors
+                li!= error.msg
+    #friends-list
+        #online-container(class="flex")
+            #online-count Online
+            img#online-img(src="/images/circle.png")
+    script(src="/socket.io/socket.io.js")
+    script.
+        const user_id="#{user._id}";
+        const user_display_name="#{user.display_name}";
+        const user_friends="#{user.friends}";
+    script(src="/javascripts/socket-connect.js")

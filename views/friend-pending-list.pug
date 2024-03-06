@@ -1,0 +1,22 @@
+//- List of users you added, but have not added back
+extends user-layout
+
+block content
+    #page
+        h1 Pending
+
+        if pendingList
+            each user in pendingList
+                p #{user.username}
+            else
+                p You have no pending requests.
+    #friends-list
+        #online-container(class="flex")
+            #online-count Online
+            img#online-img(src="/images/circle.png")
+    script(src="/socket.io/socket.io.js")
+    script.
+        const user_id="#{user._id}";
+        const user_display_name="#{user.display_name}";
+        const user_friends="#{user.friends}";
+    script(src="/javascripts/socket-connect.js")

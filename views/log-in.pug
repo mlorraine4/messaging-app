@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  #log-in-page
+    h1 Log In
+    p Don't have an account yet?
+    p
+      a(href='/strife/sign-up') Sign Up
+      
+    form.form(action='' method='POST')
+        label(for='username') Username
+        input#username(name='username' type='text'  required value=(undefined===user ? '' : user.username))
+        label(for='password') Password
+        input#password(name='password' type='password' autocomplete="on"  required)
+        button(type='submit') Log In
+    if errors
+        each error in errors
+            li!= error.msg
