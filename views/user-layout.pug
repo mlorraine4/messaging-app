@@ -12,17 +12,17 @@ html
         #title strife
     #content
       #navbar
-        a(href='/strife/friends') 
+        a(href='/friends') 
           .nav-item Friends
-        a(href='/strife/add-friend')     
+        a(href='/add-friend')     
           .nav-item Add Friend
-        a(href='/strife/friend-requests') 
+        a(href='/friend-requests') 
           .nav-item Requests
-        a(href='/strife/friends-pending') 
+        a(href='/friends-pending') 
           .nav-item Pending
         div.message-title Messages
           button#toggle-search-form +
-          form#search-form(action="/strife/get-chat" method="POST" class="hide")
+          form#search-form(action="/get-chat" method="POST" class="hide")
             div#search-friend-list
             if friends.length === 0
               p You have no friends. Add friends first to start chatting! 
@@ -40,7 +40,7 @@ html
                 .nav-item #{chat.user.display_name}
         #user-profile
           div #{user.display_name}
-          a(href="/strife/log-out")
+          a(href="/log-out")
             img#log-out-img(src="/images/logout.png")
       block content
   script(src="/javascripts/user-layout.js")

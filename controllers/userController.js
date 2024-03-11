@@ -7,7 +7,7 @@ const bcrypt = require("bcryptjs");
 // GET request for log in form.
 exports.homepage_get = asyncHandler(async (req, res, next) => {
   if (!req.user) {
-    res.redirect("/strife/log-in");
+    res.redirect("/log-in");
   } else {
     const user = await User.findById(req.user._id).exec();
     const chats = await Chat.find({ users: req.user }).populate("users").exec();
@@ -40,7 +40,7 @@ exports.friend_list_get = asyncHandler(async (req, res, next) => {
   console.log(req.session);
   console.log(req.user);
   if (!req.session.passport) {
-    res.redirect("/strife/log-in");
+    res.redirect("/log-in");
   } else {
     // Get friend list
     // Get friends who are online
@@ -76,7 +76,7 @@ exports.friend_list_get = asyncHandler(async (req, res, next) => {
 
 exports.friend_form_get = asyncHandler(async (req, res, next) => {
   if (!req.user) {
-    res.redirect("/strife/log-in");
+    res.redirect("/log-in");
   } else {
     // Get friend list
     // Get friends who are online
@@ -115,7 +115,7 @@ exports.friend_form_get = asyncHandler(async (req, res, next) => {
 
 exports.friend_form_post = asyncHandler(async (req, res, next) => {
   if (!req.user) {
-    res.redirect("/strife/log-in");
+    res.redirect("/log-in");
   } else {
     const friends = await User.find({
       _id: { $in: req.user.friends },
@@ -198,13 +198,13 @@ exports.friend_form_post = asyncHandler(async (req, res, next) => {
         // Add user, redirect to friend list.
         user.friends.push(user_query._id);
         await user.save();
-        res.redirect("/strife/friends");
+        res.redirect("/friends");
       } else {
         // Neither users have sent friend requests.
         // Add user, redirect to pending requests.
         user.friends.push(user_query._id);
         await user.save();
-        res.redirect("/strife/friends-pending");
+        res.redirect("/friends-pending");
       }
     } else {
       // No results.
@@ -272,7 +272,7 @@ exports.friend_request_list_get = asyncHandler(async (req, res, next) => {
     });
     return;
   } else {
-    res.redirect("/strife/log-in");
+    res.redirect("/log-in");
   }
 });
 
@@ -287,7 +287,7 @@ exports.friend_request_post = asyncHandler(async (req, res, next) => {
         // Add friend to user friend list.
         user.friends.push(queried_user);
         await user.save();
-        res.redirect("/strife/friends");
+        res.redirect("/friends");
       }
     }
   } else {
@@ -331,7 +331,7 @@ exports.friend_list_pending_get = asyncHandler(async (req, res, next) => {
         friends: friends,
       });
     } else {
-      res.redirect("/strife/log-in");
+      res.redirect("/log-in");
     }
   } catch (err) {
     return next(err);
@@ -350,7 +350,7 @@ exports.log_in_get = asyncHandler(async (req, res, next) => {
 // POST request for log in form submission.
 exports.log_in_post = passport.authenticate("local", {
   successRedirect: "/",
-  failureRedirect: "/strife/log-in",
+  failureRedirect: "/log-in",
 });
 
 // GET request for user log out (no POST, log out is handled by express middleware)
@@ -359,7 +359,7 @@ exports.log_out_get = asyncHandler(async (req, res, next) => {
     if (err) {
       return next(err);
     }
-    res.redirect("/strife/log-in");
+    res.redirect("/log-in");
   });
 });
 
@@ -385,7 +385,7 @@ exports.sign_up_post = asyncHandler(async (req, res, next) => {
           timestamp: Date.now(),
         });
         const result = await user.save();
-        res.redirect("/strife/log-in");
+        res.redirect("/log-in");
       });
     } else {
       res.render("sign-up", {

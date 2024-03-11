@@ -7,7 +7,7 @@ const ChatSchema = new Schema({
 });
 
 ChatSchema.virtual("url").get(function () {
-  return `/strife/chat/${this._id}`;
+  return `/chat/${this._id}`;
 });
 
 // Export model

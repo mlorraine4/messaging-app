@@ -1,13 +1,8 @@
 const initChat = (() => {
-  let form = document.getElementById("message-form");
   let message = document.getElementById("message");
   let button = document.getElementById("submit-btn");
   let messagesContainer = document.getElementById("messages-container");
   let socket = io.connect();
-
-  // // DELETE THIS!
-  // let devButton = document.getElementById("fake-button");
-  // let devMessage = document.getElementById("fake-message");
 
   // Connect to socket.
   function connectToChat() {
@@ -15,28 +10,6 @@ const initChat = (() => {
   }
 
   connectToChat();
-
-  // TODO: DELETE ME!
-  // devButton.addEventListener("click", (e) => {
-  //   e.preventDefault();
-
-  //   if (devMessage.value) {
-  //     // Send message to socket listener with message text.
-  //     let messageData = {
-  //       chat: chat_id,
-  //       text: devMessage.value,
-  //       author: "mls",
-  //     };
-
-  //     socket.emit("send-message", { message: messageData, room: chat_id });
-  //     message.value = "";
-  //     // postData("http://localhost:8080/strife/send-message", messageData).then(
-  //     //   (response) => {
-  //     //     console.log(response);
-  //     //   }
-  //     // );
-  //   }
-  // });
 
   button.addEventListener("click", (e) => {
     e.preventDefault();
@@ -51,9 +24,9 @@ const initChat = (() => {
       };
       // Send message to socket listener (for specific chat).
       socket.emit("send-message", { message: messageData, room: chat_id });
-      message.value = "";
+
       // Post message data to server.
-      postData("http://localhost:8080/strife/send-message", messageData).then(
+      postData("https://strife.mariasilvia.me/send-message", messageData).then(
         (response) => {
           console.log(response);
         }

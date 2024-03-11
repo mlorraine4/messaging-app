@@ -16,7 +16,7 @@ block content
                 else
                     div Start chatting now!
             #anchor
-        form#message-form(action="/strife/add-message" method="POST")
+        form#message-form
             input#chat(name="chat" value=chat._id hidden)
             input#message(name="message" placeholder="Type your message..." maxlength="150")
             button#submit-btn(type="button") Send

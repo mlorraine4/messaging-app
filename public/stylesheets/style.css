@@ -370,3 +370,13 @@ input {
 #sign-up-page a {
   font-weight: bold;
 }
+
+.not-found {
+  padding: 40px;
+  text-align: center;
+  font-size: large;
+}
+
+.not-found a {
+  font-weight: bold;
+}

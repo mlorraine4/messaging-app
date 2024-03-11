@@ -13,9 +13,11 @@ exports.send_message_post = asyncHandler(async (req, res, next) => {
     });
 
     await message.save();
-    return;
+    return res.sendStatus(200);
   } else {
     // User not logged in.
-    res.redirect("/strife/log-in");
+    res
+      .status(401)
+      .send("User needs to be authorized before sending a message.");
   }
 });

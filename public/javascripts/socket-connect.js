@@ -1,5 +1,9 @@
 const init = (() => {
-  const socket = io.connect();
+  const socket = io.connect("https://strife.mariasilvia.me", {
+    path: "/socket.io",
+    transports: ["websocket"],
+    secure: true,
+  });
 
   const user = {
     id: user_id,
@@ -55,7 +59,7 @@ const init = (() => {
         let inputContainer = document.createElement("div");
 
         form.method = "POST";
-        form.action = "/strife/get-chat";
+        form.action = "/get-chat";
 
         input.value = user.id;
         input.name = "user";
@@ -86,14 +90,3 @@ const init = (() => {
     }
   }
 })();
-
-
-// TODO: DELETE ME: fake log out of user gary
-// const socket = io.connect();
-// document.querySelector("#fake-button").addEventListener("click", () => {
-//   socket.emit("log-out", {
-//     id: "6536e375b83fea736e4de927",
-//     display_name: "Gary",
-//     friends: ["653811542edda256feac07d5"],
-//   });
-// });
