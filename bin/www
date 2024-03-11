@@ -36,11 +36,6 @@ const io = require("../socket.js").init(server);
 
 // online users
 let users = [];
-users.push({
-  id: "6536e375b83fea736e4de927",
-  display_name: "Gary",
-  friends: ["653811542edda256feac07d5"],
-});
 
 // Socket io
 io.on("connection", (socket) => {
@@ -80,7 +75,7 @@ io.on("connection", (socket) => {
             // Emit to all users who are friends with user who logged out.
             io.to(el.socket_id).emit("user-logged-out", user);
           }
-        })
+        });
       }
     }
   });
@@ -115,7 +110,7 @@ io.on("connection", (socket) => {
       });
       if (isAuth) {
         // User is a part of chat.
-        console.log('sending message');
+        console.log("sending message");
         io.to(room).emit("recieve-message", message);
       }
     }
@@ -137,7 +132,7 @@ io.on("connection", (socket) => {
           if (id.equals(user.id)) {
             friends.push(user);
           }
-        })
+        });
       });
 
       io.to(socket.id).emit("users", friends);

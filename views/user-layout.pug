@@ -24,6 +24,9 @@ html
           button#toggle-search-form +
           form#search-form(action="/strife/get-chat" method="POST" class="hide")
             div#search-friend-list
+            if friends.length === 0
+              p You have no friends. Add friends first to start chatting! 
+            else
               p Select your friend to open chat
               each friend in friends
                 div.search-friend-item

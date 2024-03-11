@@ -10,19 +10,21 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
 const User = require("./models/user");
-
+const MongoStore = require("connect-mongo");
 
 const app = express();
 
-
-const sessionMiddleware = session({
-  secret: process.env.SESSION_SECRET,
-  resave: true,
-  saveUninitialized: true,
-});
-
 // Attach session
-app.use(sessionMiddleware);
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({
+      mongoUrl: process.env.MONGO_URL,
+    }),
+  })
+);
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -111,7 +113,6 @@ app.use(
   express.static(path.join(__dirname, "node_modules", "moment/"))
 );
 app.locals.moment = require("moment");
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -7,9 +7,10 @@ block content
 
         if requestList
             each user in requestList
-                p #{user.username}
-                form(action='/strife/friend-requests/' + user._id method='POST')
-                    button(type='submit') Accept Request
+                div(class="flex-center friend-item")
+                    p #{user.username}
+                    form(action='/strife/friend-requests/' + user._id method='POST')
+                        button(type='submit') Accept Request
             else
                 p You have no friend requests.
     #friends-list 

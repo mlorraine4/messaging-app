@@ -9,13 +9,12 @@ exports.homepage_get = asyncHandler(async (req, res, next) => {
   if (!req.user) {
     res.redirect("/strife/log-in");
   } else {
-
     const user = await User.findById(req.user._id).exec();
     const chats = await Chat.find({ users: req.user }).populate("users").exec();
-      const friends = await User.find({
-        _id: { $in: req.user.friends },
-        friends: req.user._id,
-      }).exec();
+    const friends = await User.find({
+      _id: { $in: req.user.friends },
+      friends: req.user._id,
+    }).exec();
     let userChats = [];
 
     // list of recipients in each user chat
@@ -46,10 +45,10 @@ exports.friend_list_get = asyncHandler(async (req, res, next) => {
     // Get friend list
     // Get friends who are online
     const user = await User.findById(req.session.passport.user).exec();
-      const friends = await User.find({
-        _id: { $in: req.user.friends },
-        friends: req.user._id,
-      }).exec();
+    const friends = await User.find({
+      _id: { $in: req.user.friends },
+      friends: req.user._id,
+    }).exec();
     const chats = await Chat.find({ users: req.user }).populate("users").exec();
     let userChats = [];
 
@@ -82,10 +81,10 @@ exports.friend_form_get = asyncHandler(async (req, res, next) => {
     // Get friend list
     // Get friends who are online
     const chats = await Chat.find({ users: req.user }).populate("users").exec();
-     const friends = await User.find({
-       _id: { $in: req.user.friends },
-       friends: req.user._id,
-     }).exec();
+    const friends = await User.find({
+      _id: { $in: req.user.friends },
+      friends: req.user._id,
+    }).exec();
     let userChats = [];
 
     chats.forEach((chat) => {
@@ -100,7 +99,11 @@ exports.friend_form_get = asyncHandler(async (req, res, next) => {
         }
       });
     });
-    res.render("friend-form", { user: req.user, chats: userChats, friends: friends });
+    res.render("friend-form", {
+      user: req.user,
+      chats: userChats,
+      friends: friends,
+    });
     return;
   }
 });
@@ -114,10 +117,10 @@ exports.friend_form_post = asyncHandler(async (req, res, next) => {
   if (!req.user) {
     res.redirect("/strife/log-in");
   } else {
-      const friends = await User.find({
-        _id: { $in: req.user.friends },
-        friends: req.user._id,
-      }).exec();
+    const friends = await User.find({
+      _id: { $in: req.user.friends },
+      friends: req.user._id,
+    }).exec();
     const user = await User.findById(req.user._id).exec();
     const user_query = await User.findOne({
       username: req.body.username,
@@ -228,7 +231,7 @@ exports.friend_form_post = asyncHandler(async (req, res, next) => {
         username: req.body.username,
         errors: [{ msg: "User not found with that username." }],
         chats: userChats,
-        friends: friends
+        friends: friends,
       });
       return;
     }
@@ -242,10 +245,10 @@ exports.friend_request_list_get = asyncHandler(async (req, res, next) => {
       friends: req.user._id,
     });
     const chats = await Chat.find({ users: req.user }).populate("users").exec();
-      const friends = await User.find({
-        _id: { $in: req.user.friends },
-        friends: req.user._id,
-      }).exec();
+    const friends = await User.find({
+      _id: { $in: req.user.friends },
+      friends: req.user._id,
+    }).exec();
     let userChats = [];
 
     chats.forEach((chat) => {
@@ -295,10 +298,10 @@ exports.friend_request_post = asyncHandler(async (req, res, next) => {
 exports.friend_list_pending_get = asyncHandler(async (req, res, next) => {
   try {
     if (req.user) {
-        const friends = await User.find({
-          _id: { $in: req.user.friends },
-          friends: req.user._id,
-        }).exec();
+      const friends = await User.find({
+        _id: { $in: req.user.friends },
+        friends: req.user._id,
+      }).exec();
       const pendingList = await User.find({
         _id: { $in: req.user.friends },
         friends: { $ne: req.user._id },
@@ -334,16 +337,6 @@ exports.friend_list_pending_get = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 });
-
-exports.account_get = asyncHandler(async (req, res, next) => { 
-  if (req.user) {
-
-    res.render("account", {user: req.user});
-
-  } else {
-    res.redirect("/strife/log-in");
-  }
-})
 
 // GET request for log in form.
 exports.log_in_get = asyncHandler(async (req, res, next) => {
@@ -389,6 +382,7 @@ exports.sign_up_post = asyncHandler(async (req, res, next) => {
           password: hashedPassword,
           display_name: req.body.display_name,
           friends: [],
+          timestamp: Date.now(),
         });
         const result = await user.save();
         res.redirect("/strife/log-in");
@@ -405,8 +399,4 @@ exports.sign_up_post = asyncHandler(async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-});
-
-exports.not_found = asyncHandler(async (req, res, next) => {
-  res.render("404");
 });
